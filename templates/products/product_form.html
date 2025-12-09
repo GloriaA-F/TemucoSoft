@@ -1,0 +1,170 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Editar{% else %}Nuevo{% endif %} Producto - TemucoSoft{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h2">
+        <i class="bi bi-box-seam"></i> 
+        {% if form.instance.pk %}Editar Producto{% else %}Nuevo Producto{% endif %}
+    </h1>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}">Productos</a></li>
+            <li class="breadcrumb-item active">{% if form.instance.pk %}Editar{% else %}Nuevo{% endif %}</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="id_sku" class="form-label">SKU *</label>
+                            <input type="text" class="form-control {% if form.sku.errors %}is-invalid{% endif %}" 
+                                   id="id_sku" name="sku" value="{{ form.sku.value|default:'' }}" required>
+                            {% if form.sku.errors %}
+                            <div class="invalid-feedback">{{ form.sku.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-8">
+                            <label for="id_name" class="form-label">Nombre *</label>
+                            <input type="text" class="form-control {% if form.name.errors %}is-invalid{% endif %}" 
+                                   id="id_name" name="name" value="{{ form.name.value|default:'' }}" required>
+                            {% if form.name.errors %}
+                            <div class="invalid-feedback">{{ form.name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12">
+                            <label for="id_description" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="id_description" name="description" rows="3">{{ form.description.value|default:'' }}</textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_category" class="form-label">Categoría</label>
+                            <select class="form-select" id="id_category" name="category">
+                                <option value="">-- Seleccione --</option>
+                                {% for cat in categories %}
+                                <option value="{{ cat.id }}" {% if form.category.value == cat.id %}selected{% endif %}>
+                                    {{ cat.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_supplier" class="form-label">Proveedor</label>
+                            <select class="form-select" id="id_supplier" name="supplier">
+                                <option value="">-- Seleccione --</option>
+                                {% for sup in suppliers %}
+                                <option value="{{ sup.id }}" {% if form.supplier.value == sup.id %}selected{% endif %}>
+                                    {{ sup.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_cost" class="form-label">Costo *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control {% if form.cost.errors %}is-invalid{% endif %}" 
+                                       id="id_cost" name="cost" value="{{ form.cost.value|default:'' }}" 
+                                       step="0.01" min="0" required>
+                                {% if form.cost.errors %}
+                                <div class="invalid-feedback">{{ form.cost.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_price" class="form-label">Precio de Venta *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control {% if form.price.errors %}is-invalid{% endif %}" 
+                                       id="id_price" name="price" value="{{ form.price.value|default:'' }}" 
+                                       step="0.01" min="0" required>
+                                {% if form.price.errors %}
+                                <div class="invalid-feedback">{{ form.price.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_image" class="form-label">Imagen</label>
+                            <input type="file" class="form-control" id="id_image" name="image" accept="image/*">
+                            {% if form.instance.image %}
+                            <small class="text-muted">Actual: {{ form.instance.image.name }}</small>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label d-block">Estado</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="id_is_active" name="is_active" 
+                                       {% if form.is_active.value %}checked{% endif %}>
+                                <label class="form-check-label" for="id_is_active">
+                                    Producto activo
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger mt-3">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Guardar Producto
+                        </button>
+                        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-info-circle"></i> Información</h5>
+                <ul class="list-unstyled mt-3">
+                    <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Los campos con * son obligatorios</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success"></i> El SKU debe ser único</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success"></i> El precio debe ser mayor al costo</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Formato de imagen: JPG, PNG</li>
+                </ul>
+            </div>
+        </div>
+
+        {% if form.instance.pk %}
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-graph-up"></i> Estadísticas</h5>
+                <p class="mb-2">
+                    <strong>Margen de ganancia:</strong><br>
+                    <span class="badge bg-success">{{ form.instance.profit_margin|floatformat:1 }}%</span>
+                </p>
+                <p class="mb-0">
+                    <strong>Creado:</strong><br>
+                    <small>{{ form.instance.created_at|date:"d/m/Y H:i" }}</small>
+                </p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

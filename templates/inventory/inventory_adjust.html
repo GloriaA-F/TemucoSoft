@@ -1,0 +1,79 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Ajustar Inventario - TemucoSoft{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h2"><i class="bi bi-plus-minus"></i> Ajustar Inventario</h1>
+    <p class="text-muted">Agregar o reducir stock manualmente</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="id_branch" class="form-label">Sucursal *</label>
+                            <select class="form-select" id="id_branch" name="branch" required>
+                                <option value="">-- Seleccione --</option>
+                                {% for branch in branches %}
+                                <option value="{{ branch.id }}">{{ branch.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_product" class="form-label">Producto *</label>
+                            <select class="form-select" id="id_product" name="product" required>
+                                <option value="">-- Seleccione --</option>
+                                {% for product in products %}
+                                <option value="{{ product.id }}">{{ product.sku }} - {{ product.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="id_quantity" class="form-label">Cantidad *</label>
+                            <input type="number" class="form-control" id="id_quantity" name="quantity" required>
+                            <small class="text-muted">Número positivo para sumar, negativo para restar</small>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="id_reason" class="form-label">Motivo *</label>
+                            <textarea class="form-control" id="id_reason" name="reason" rows="3" required 
+                                      placeholder="Ej: Ingreso por compra, Ajuste por inventario físico, Corrección de error..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Ajustar Stock
+                        </button>
+                        <a href="{% url 'inventory_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-info-circle"></i> Información</h5>
+                <ul class="list-unstyled mt-3">
+                    <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Usa números positivos para aumentar</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Usa números negativos para reducir</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success"></i> El motivo queda registrado en el historial</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-danger"></i> No se permite stock negativo</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

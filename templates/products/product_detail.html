@@ -1,0 +1,139 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ product.name }} - TemucoSoft{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}">Productos</a></li>
+            <li class="breadcrumb-item active">{{ product.name }}</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}">
+                        {% else %}
+                        <div class="bg-light p-5 text-center rounded">
+                            <i class="bi bi-image" style="font-size: 4rem; color: #ccc;"></i>
+                            <p class="text-muted mt-2">Sin imagen</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <h2>{{ product.name }}</h2>
+                        <p class="text-muted">SKU: <strong>{{ product.sku }}</strong></p>
+                        
+                        {% if product.description %}
+                        <p>{{ product.description }}</p>
+                        {% endif %}
+                        
+                        <hr>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <p class="mb-1 text-muted">Categoría</p>
+                                <p>
+                                    {% if product.category %}
+                                    <span class="badge bg-info">{{ product.category.name }}</span>
+                                    {% else %}
+                                    <span class="text-muted">Sin categoría</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-6">
+                                <p class="mb-1 text-muted">Proveedor</p>
+                                <p>{{ product.supplier.name|default:"Sin proveedor" }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-4">
+                                <p class="mb-1 text-muted">Costo</p>
+                                <h4>${{ product.cost|floatformat:0 }}</h4>
+                            </div>
+                            <div class="col-4">
+                                <p class="mb-1 text-muted">Precio</p>
+                                <h4 class="text-primary">${{ product.price|floatformat:0 }}</h4>
+                            </div>
+                            <div class="col-4">
+                                <p class="mb-1 text-muted">Margen</p>
+                                <h4 class="text-success">{{ product.profit_margin|floatformat:1 }}%</h4>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <p class="mb-1 text-muted">Estado</p>
+                            {% if product.is_active %}
+                            <span class="badge bg-success">Activo</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactivo</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="btn-group">
+                            <a href="{% url 'product_edit' product.id %}" class="btn btn-primary">
+                                <i class="bi bi-pencil"></i> Editar
+                            </a>
+                            <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-boxes"></i> Inventario por Sucursal</h5>
+                
+                {% if inventory_items %}
+                <div class="list-group list-group-flush">
+                    {% for item in inventory_items %}
+                    <div class="list-group-item px-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ item.branch.name }}</strong><br>
+                                <small class="text-muted">Punto reorden: {{ item.reorder_point }}</small>
+                            </div>
+                            <div class="text-end">
+                                <h5 class="mb-0 {% if item.needs_reorder %}text-danger{% endif %}">
+                                    {{ item.stock }}
+                                </h5>
+                                {% if item.needs_reorder %}
+                                <span class="badge bg-warning">Bajo stock</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-3">Sin inventario registrado</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6 class="card-title">Información</h6>
+                <p class="mb-1"><small class="text-muted">Creado:</small></p>
+                <p><small>{{ product.created_at|date:"d/m/Y H:i" }}</small></p>
+                <p class="mb-1"><small class="text-muted">Actualizado:</small></p>
+                <p><small>{{ product.updated_at|date:"d/m/Y H:i" }}</small></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

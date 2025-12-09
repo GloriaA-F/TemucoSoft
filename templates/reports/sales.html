@@ -1,0 +1,150 @@
+{% extends 'base/base.html' %}
+{% load custom_filters %}
+{% block title %}Reporte de Ventas - TemucoSoft{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h2"><i class="bi bi-graph-up"></i> Reporte de Ventas</h1>
+    <p class="text-muted">Análisis de ventas por período</p>
+</div>
+
+<!-- Filtros -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Desde</label>
+                <input type="date" name="date_from" class="form-control" value="{{ date_from|date:'Y-m-d' }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Hasta</label>
+                <input type="date" name="date_to" class="form-control" value="{{ date_to|date:'Y-m-d' }}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Sucursal</label>
+                <select name="branch" class="form-select">
+                    <option value="">Todas</option>
+                    {% for b in branches %}
+                    <option value="{{ b.id }}">{{ b.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Generar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Total Ventas</h6>
+                <h2 class="text-primary">{{ total_sales }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Ingresos Totales</h6>
+                <h2 class="text-success">${{ total_revenue|floatformat:0 }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Ticket Promedio</h6>
+                <h2 class="text-info">${{ total_revenue|div:total_sales|default:0|floatformat:0 }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ventas por Sucursal -->
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-building"></i> Ventas por Sucursal</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Sucursal</th>
+                                <th>Ventas</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in by_branch %}
+                            <tr>
+                                <td><strong>{{ item.branch__name }}</strong></td>
+                                <td>{{ item.count }}</td>
+                                <td><strong>${{ item.revenue|floatformat:0 }}</strong></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">Sin datos</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-credit-card"></i> Ventas por Método de Pago</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Método</th>
+                                <th>Ventas</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in by_payment %}
+                            <tr>
+                                <td>
+                                    {% if item.payment_method == 'efectivo' %}
+                                    <span class="badge bg-success">Efectivo</span>
+                                    {% elif item.payment_method == 'tarjeta_debito' %}
+                                    <span class="badge bg-primary">Tarjeta Débito</span>
+                                    {% elif item.payment_method == 'tarjeta_credito' %}
+                                    <span class="badge bg-warning">Tarjeta Crédito</span>
+                                    {% else %}
+                                    <span class="badge bg-info">Transferencia</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.count }}</td>
+                                <td><strong>${{ item.revenue|floatformat:0 }}</strong></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">Sin datos</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Eliminar Producto - TemucoSoft{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-exclamation-triangle text-danger" style="font-size: 4rem;"></i>
+                <h3 class="mt-3">¿Eliminar Producto?</h3>
+                <p class="text-muted">Esta acción no se puede deshacer.</p>
+                
+                <div class="alert alert-warning text-start">
+                    <strong>Producto:</strong> {{ product.name }}<br>
+                    <strong>SKU:</strong> {{ product.sku }}<br>
+                    <strong>Precio:</strong> ${{ product.price|floatformat:0 }}
+                </div>
+
+                <p class="text-danger"><small>⚠️ Se eliminarán también los registros de inventario asociados.</small></p>
+
+                <form method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Sí, Eliminar
+                    </button>
+                    <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Dashboard - TemucoSoft{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h2"><i class="bi bi-speedometer2"></i> Dashboard</h1>
+    <p class="text-muted">Bienvenido, {{ user.get_full_name|default:user.username }}</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <p class="mb-2">Total Productos</p>
+            <h3>{{ total_products }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <p class="mb-2">Ventas Hoy</p>
+            <h3>{{ sales_today }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <p class="mb-2">Sucursales</p>
+            <h3>{{ total_branches }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+            <p class="mb-2">Proveedores</p>
+            <h3>{{ total_suppliers }}</h3>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-lightning-charge"></i> Acciones Rápidas</h5>
+                <div class="d-grid gap-2 mt-3">
+                    {% if user.role != 'cliente_final' %}
+                    <a href="{% url 'sale_create' %}" class="btn btn-primary">
+                        <i class="bi bi-cart-plus"></i> Nueva Venta POS
+                    </a>
+                    {% endif %}
+                    {% if user.role == 'super_admin' or user.role == 'admin_cliente' or user.role == 'gerente' %}
+                    <a href="{% url 'product_create' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-plus-circle"></i> Nuevo Producto
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'shop_catalog' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-shop"></i> Ver Catálogo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-info-circle"></i> Información</h5>
+                <ul class="list-unstyled mt-3">
+                    <li class="mb-2">
+                        <strong>Empresa:</strong> {{ user.company.name|default:"No asignada" }}
+                    </li>
+                    <li class="mb-2">
+                        <strong>Rol:</strong> 
+                        <span class="badge bg-primary">{{ user.get_role_display }}</span>
+                    </li>
+                    <li class="mb-2">
+                        <strong>Email:</strong> {{ user.email }}
+                    </li>
+                    <li class="mb-2">
+                        <strong>RUT:</strong> {{ user.rut }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Sales (if applicable) -->
+{% if recent_sales %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-clock-history"></i> Ventas Recientes</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Fecha</th>
+                                <th>Sucursal</th>
+                                <th>Vendedor</th>
+                                <th>Total</th>
+                                <th>Método Pago</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sale in recent_sales %}
+                            <tr>
+                                <td>{{ sale.id }}</td>
+                                <td>{{ sale.created_at|date:"d/m/Y H:i" }}</td>
+                                <td>{{ sale.branch.name }}</td>
+                                <td>{{ sale.user.username }}</td>
+                                <td><strong>${{ sale.total|floatformat:0 }}</strong></td>
+                                <td><span class="badge bg-success">{{ sale.get_payment_method_display }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

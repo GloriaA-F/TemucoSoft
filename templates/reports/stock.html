@@ -1,0 +1,120 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Reporte de Stock - TemucoSoft{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h2"><i class="bi bi-boxes"></i> Reporte de Stock</h1>
+    <p class="text-muted">Estado del inventario</p>
+</div>
+
+<!-- Filtros -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Sucursal</label>
+                <select name="branch" class="form-select">
+                    <option value="">Todas</option>
+                    {% for b in branches %}
+                    <option value="{{ b.id }}" {% if request.GET.branch == b.id|stringformat:"s" %}selected{% endif %}>
+                        {{ b.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Filtrar</label>
+                <select name="low_stock" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="true" {% if request.GET.low_stock == "true" %}selected{% endif %}>Solo bajo stock</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Total Items</h6>
+                <h2 class="text-primary">{{ total_items }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Productos Bajo Stock</h6>
+                <h2 class="text-warning">{{ low_stock_count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Sucursales</h6>
+                <h2 class="text-info">{{ branches|length }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de Stock -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>SKU</th>
+                        <th>Producto</th>
+                        <th>Sucursal</th>
+                        <th>Stock</th>
+                        <th>Punto Reorden</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in inventory_items %}
+                    <tr {% if item.needs_reorder %}class="table-warning"{% endif %}>
+                        <td><strong>{{ item.product.sku }}</strong></td>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.branch.name }}</td>
+                        <td>
+                            <h5 class="mb-0 {% if item.needs_reorder %}text-danger{% endif %}">
+                                {{ item.stock }}
+                            </h5>
+                        </td>
+                        <td>{{ item.reorder_point }}</td>
+                        <td>
+                            {% if item.needs_reorder %}
+                            <span class="badge bg-warning">
+                                <i class="bi bi-exclamation-triangle"></i> Bajo Stock
+                            </span>
+                            {% else %}
+                            <span class="badge bg-success">OK</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            Sin datos de inventario
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
