@@ -6,7 +6,6 @@ Sistema modular de punto de venta y comercio electrónico con gestión de invent
 
 - **IP Pública Web:** 100.31.181.235
 - **IP Privada Web:** 172.31.66.81
-- **IP Pública DB:** 3.213.136.63
 - **IP Privada DB:** 172.31.74.124
 
 ## 📋 Características
@@ -236,6 +235,7 @@ temucosoft/
 ## 📞 Soporte
 
 Para más información, contactar al equipo de desarrollo de TemucoSoft.
+GLORIA ANTIBIL Y NAYARETH MILLAHUAL
 
 ## 📄 Licencia
 
